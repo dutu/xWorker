@@ -1,18 +1,32 @@
 {
-  "name": "xWorker-quickstart",
-  "version": "0.0.1",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heroku-examples/node-ws-test.git"
-  },
-  "dependencies": {
-    "express": "^4.4.5",
-    "ws": "0.4.x"
-  },
-  "engines": {
-    "node": "5.x.x"
-  },
-  "scripts": {
-    "start": "node server.js"
-  }
+	"name": "xWorker-quickstart",
+	"version": "0.0.1",
+	"description": "eXchange Monitor",
+	"author": "Adrian Clinciu",
+	"main": "server.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dutu/xWorker.git"
+	},
+	"engines": {
+		"node": "5.x.x"
+	},
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^4.4.5",
+		"ws": "^0.4.x",
+		"winston": "^2.1.1",
+		"mongoose": "*",
+		"lodash": "*",
+		"async": "^1.5.x",
+		"big.js": "*",
+		"moment": "*"
+	},
+	"devDependencies": {
+		"babel-cli": "^6.4.5"
+	  }
 }
+
+
