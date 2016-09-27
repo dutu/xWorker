@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-var _ = require('lodash');
-var Big = require ("big.js");
-var moment = require("moment");
+const _ = require('lodash');
+const Big = require ("big.js");
+const moment = require("moment");
 
-var srv = require ("../../core/srv");
+const srv = require ("../../core/srv");
 
 var DummyWorker = function(name) {
 	var self = this;

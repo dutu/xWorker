@@ -1,27 +1,25 @@
 
-var winston = require("winston");
-var express = require('express');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var morgan = require('morgan');
-var path = require('path');
-var http = require('http');
+const winston = require('winston');
+const express = require('express');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const morgan = require('morgan');
 
-var Workers = require('./server/workers/workers');
-var srv = require ("./server/core/srv");
-var config = require("./server/core/config");
-var logger = srv.logger;
+const Workers = require('./server/workers/workers');
+const srv = require ('./server/core/srv');
+const config = require('./server/core/config');
+const logger = srv.logger;
 
-var routes = require('./routes');
-var api = require('./routes/api');
+const routes = require('./routes');
+const api = require('./routes/api');
 
-var app = module.exports = express();
+const app = module.exports = express();
 
-var server = http.createServer(app);
-var io = require('socket.io')(server);
+const server = http.createServer(app);
+const io = require('socket.io')(server);
 srv.io = io;
 
-logger.info("Socket.io server created");
+logger.info('Socket.io server created');
 
 /**
  * Configuration
@@ -89,43 +87,43 @@ io.sockets.on('connection',  function (socket) {
  */
 
 server.listen(app.get('port'), function () {
-	logger.info('Express server listening on port ' + app.get('port'));
+	logger.info(`Express server listening on port ${app.get('port')}`);
 });
 
 
 /*
-var i, signals = ["SIGTERM"];
-for (i in signals) {
-	process.on(signals[i], function() {
-		srv.workers.closeGracefully(signals[i]);
-	});
-}
-*/
+ var i, signals = ["SIGTERM"];
+ for (i in signals) {
+ process.on(signals[i], function() {
+ srv.workers.closeGracefully(signals[i]);
+ });
+ }
+ */
 
 
 
 srv.config = _.cloneDeep(config);
 
 srv.db.on('error', function (err) {   // any connection errors will be written to the console
-	logger.crit("%s: init_db: %s", srv.name, err.message);
+	logger.crit(`${srv.name}: init_db: ${err.message}`);
 });
 
 srv.workers = new Workers();
 
 
-var mongodbURI = process.env.MONGOLAB_URI;
+const mongodbURI = process.env.MONGOLAB_URI;
 if (!mongodbURI) {
-	logger.warning("%s: For using mongodb please set environment variable MONGOLAB_URI", srv.name);
+	logger.warning(`${srv.name}: For using mongodb please set environment variable MONGOLAB_URI`);
 	srv.workers.start();
 } else {
-	logger.info(srv.name, "Connecting to mongodb://" + mongodbURI.replace(/[^@]*@/, ""));
+	logger.info(`${srv.name}: Connecting to mongodb://${mongodbURI.replace(/[^@]*@/, "")}`);
 	mongoose.connect(mongodbURI, function(err) {
 		if (err) {
-			logger.crit(srv.name, " connect_db: %s", err.message);
-			logger.crit(srv.name, "Workers not started!");
+			logger.crit(`${srv.name}: connect_db: ${err.message}`);
+			logger.crit(`${srv.name}: Workers not started!`);
 		} else {
-			logger.info(srv.name, "connect_db: mongodb connection successful");
-			logger.info(srv.name, "Starting workers");
+			logger.info(`${srv.name}: connect_db: mongodb connection successful`);
+			logger.info(`${srv.name}: Starting workers`);
 			srv.workers.start();
 		}
 	});

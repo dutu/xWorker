@@ -1,7 +1,7 @@
-"use strict";
-var winston = require("winston");
+'use strict';
+const winston = require('winston');
 
-var logger = new (winston.Logger)({
+let logger = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)({
 			colorize: 'all'

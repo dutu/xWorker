@@ -1,26 +1,26 @@
 "use strict";
 
 var Workers = function() {
-	var srv = require ("./../core/srv");
-	var logger = srv.logger;
-	var self = this;
+    var srv = require ("./../core/srv");
+    var logger = srv.logger;
+    var self = this;
     self.me = "workers";
     self.workers = [];
 
-	var startWorker = function (worker) {
-		try {
-			worker.start();
-			self.workers.push(worker);
-		} catch (err) {
-			logger.crit("%s: %s %s", self.me, worker.me, err.message);
-		}
-	};
+    var startWorker = function (worker) {
+        try {
+            worker.start();
+            self.workers.push(worker);
+        } catch (err) {
+            logger.crit("%s: %s %s", self.me, worker.me, err.message);
+        }
+    };
 
     self.start = function () {
 
-	    var DummyWorker = require("./../workers/dummyWorker/dummyWorker");
-	    var dummyWorker = new DummyWorker("dummyWorker");
-	    startWorker(dummyWorker);
+        var DummyWorker = require("./../workers/dummyWorker/dummyWorker");
+        var dummyWorker = new DummyWorker("dummyWorker");
+        startWorker(dummyWorker);
 
 // add additional workers as above
 
