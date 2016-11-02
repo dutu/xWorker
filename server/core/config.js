@@ -28,7 +28,7 @@ config.mailer = {
 		api_user: process.env.SENDGRID_USERNAME || 'SENDGRID_USERNAME',
 		api_key: process.env.SENDGRID_PASSWORD || 'SENDGRID_PASSWORD'
 	},
-	user: '',       // Your Email server user name - usually your full Email address 'name@mydomain.com'
+	user: '',       // Your Email httpServer user name - usually your full Email address 'name@mydomain.com'
 	from: '',       // 'name@mydomain.com'
 	to: '',       // 'name@somedomain.com, name@someotherdomain.com'
 	ssl: true,        // Use SSL (true for Gmail)

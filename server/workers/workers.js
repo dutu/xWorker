@@ -1,49 +1,50 @@
-"use strict";
+'use strict';
 
-var Workers = function() {
-    var srv = require ("./../core/srv");
-    var logger = srv.logger;
-    var self = this;
-    self.me = "workers";
-    self.workers = [];
+import winston from 'winston';
+import mongoose from 'mongoose';
 
-    var startWorker = function (worker) {
-        try {
-            worker.start();
-            self.workers.push(worker);
-        } catch (err) {
-            logger.crit("%s: %s %s", self.me, worker.me, err.message);
-        }
-    };
+import { ioSocket } from '../../server.js';
+import { CoinSeller } from './CoinSeller/CoinSeller.js'
 
-    self.start = function () {
+export function runWorkers () {
+  let me = 'runWorkers';
+  let logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({
+        colorize: 'all',
+      })
+    ],
+  });
+  logger.setLevels(winston.config.syslog.levels);
 
-        var DummyWorker = require("./../workers/dummyWorker/dummyWorker");
-        var dummyWorker = new DummyWorker("dummyWorker");
-        startWorker(dummyWorker);
+  function setupAndStartWorkers() {
+    let zecSeller = new CoinSeller('zecSeller');
+    zecSeller.setLogger(logger);
+    zecSeller.updateConfig({reportEveryMinutes: 10});
+    zecSeller.engage();
+  }
 
-// add additional workers as above
+  const db = mongoose.connection;
+  mongoose.Promise = global.Promise;
 
-    };
+  db.on('error', function (err) {   // any connection errors will be written to the console
+    logger.crit(`${me}: init_db: ${err.message}`);
+  });
 
-    self.closeGracefully = function (signal) {
-        var graceTimeout = 100;
-        process.exit();
-        logger.info("%s: received signal (%s) on %s, shutting down gracefully in %s ms'", self.me,
-            signal,
-            new Date().toString('T'),
-            graceTimeout
-        );
-        setTimeout(function() {
-            console.info('(x) forcefully shutting down',graceTimeout);
-            process.exit();
-        }, graceTimeout);
-
-        self.workers.forEach(function (element, index, array) {
-            if (typeof element.closeGracefully == 'function') {
-                element.closeGracefully();
-            }
-        });
-    };
-};
-module.exports = Workers;
+  const mongodbURI = process.env.MONGOLAB_URI;
+  if (!mongodbURI) {
+    logger.warning(`${me}: For using mongodb please set environment variable MONGOLAB_URI`);
+  } else {
+    logger.info(`${me}: Connecting to mongodb://${mongodbURI.replace(/[^@]*@/, "")}`);
+    mongoose.connect(mongodbURI, function (err) {
+      if (err) {
+        logger.crit(`${me}: connect_db: ${err.message}`);
+        logger.crit(`${me}: Workers not started!`);
+      } else {
+        logger.info(`${me}: connect_db: mongodb connection successful`);
+        logger.info(`${me}: Starting workers`);
+        setupAndStartWorkers();
+      }
+    });
+  }
+}
